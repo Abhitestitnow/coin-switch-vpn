@@ -1,0 +1,2 @@
+mkdir -p gradle/wrapper
+curl -L https://github.com/android/nowinandroid/raw/main/gradle/wrapper/gradle-wrapper.jar -o gradle/wrapper/gradle-wrapper.jar
