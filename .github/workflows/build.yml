@@ -1,0 +1,58 @@
+name: Build Coin Switch VPN
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set Version
+      run: echo "VERSION=v$(date +%Y%m%d)-$(echo $GITHUB_SHA | head -c 7)" >> $GITHUB_ENV
+    
+    - name: Setup JDK 17
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'zulu'
+        java-version: '17'
+        cache: 'gradle'
+    
+    - name: Grant Permissions
+      run: chmod +x ./gradlew
+    
+    - name: Build APK
+      run: ./gradlew app:assembleDebug
+    
+    - name: Upload APK Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: Coin-Switch-VPN-${{ env.VERSION }}
+        path: app/build/outputs/apk/debug/app-debug.apk
+        retention-days: 30
+    
+    - name: Create Release
+      if: github.ref == 'refs/heads/main'
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ env.VERSION }}
+        release_name: Coin Switch VPN ${{ env.VERSION }}
+        draft: false
+        prerelease: false
+    
+    - name: Upload Release APK
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: app/build/outputs/apk/debug/app-debug.apk
+        asset_name: Coin-Switch-VPN-${{ env.VERSION }}.apk
+        asset_content_type: application/vnd.android.package-archive
