@@ -5,12 +5,12 @@ plugins {
 
 android {
     namespace = "com.coinswitchvpn"
-    compileSdk = 35
+    compileSdk = 34  // Changed from 35
     
     defaultConfig {
         applicationId = "com.coinswitchvpn"
         minSdk = 28
-        targetSdk = 35
+        targetSdk = 34  // Changed from 35
         versionCode = 1
         versionName = "1.0"
     }
@@ -21,7 +21,6 @@ android {
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
     }
-    buildFeatures { viewBinding = true }
 }
 
 dependencies {
